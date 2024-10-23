@@ -156,7 +156,7 @@ cython_debug/
 
 # --
 # ignore csv files, since they are heavy
-.csv
+*.csv
 # --
 
 # PyCharm
