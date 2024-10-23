@@ -69,7 +69,6 @@ Explore the current state of the analysis via the [interactive dashboard](https:
 - [ ] Predictive modeling for demand
 - [ ] Automated anomaly detection
 
-
 ## Blog Post
 For a detailed discussion of the analysis and findings, see the [draft blog post](./blog.md).
 

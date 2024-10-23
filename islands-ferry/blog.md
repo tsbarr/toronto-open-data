@@ -1,3 +1,6 @@
+
+    *Note: This is a draft for a blog post about this analysis*
+
 # Exploring Toronto Ferry Traffic Patterns: A Data Science Journey
 
 ## Introduction
@@ -116,4 +119,4 @@ This project demonstrates how data science can provide insights into urban trans
 
 ---
 
-*The code for this project is available on my GitHub repository [link]. Feel free to reach out with questions or suggestions for improvement!*
+*The code for this project is available on my GitHub repository [link](github.com/tsbarr/toronto-open-data/islands-ferry). Feel free to reach out with questions or suggestions for improvement!*
