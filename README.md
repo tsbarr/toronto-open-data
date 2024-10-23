@@ -14,7 +14,12 @@ Analyzing patterns in Toronto Island Ferry usage to understand:
 - Impact of weather and events on ridership
 - Opportunities for service optimization
 
-*More projects coming soon!*
+### 🐱🐕 [Pet Names Analysis](./licensed-pets)
+Exploring a decade of Toronto's pet licensing data (2012-2022) to reveal:
+- Evolution of pet naming trends
+- Comparative analysis between cat and dog names
+- Time series analysis of name popularity
+- Interactive visualizations of naming patterns
 
 ## Technical Stack
 - **Data Collection**: Python, CKAN API
@@ -26,6 +31,7 @@ Analyzing patterns in Toronto Island Ferry usage to understand:
 ```
 toronto-open-data/
 ├── islands-ferry/     # Toronto Island Ferry analysis
+└── licensed-pets/     # Pet Names analysis
 ```
 <!-- ├── common/            # Shared utilities and helpers
 │   ├── utils/        # Common functions
