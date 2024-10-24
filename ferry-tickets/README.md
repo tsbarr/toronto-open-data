@@ -25,24 +25,28 @@ Data is collected from the [Toronto Island Ferry Ticket Counts](https://open.tor
    - Weekday peaks: 8:00-9:30 AM, 4:30-6:00 PM
    - Weekend peaks: 11:00 AM - 3:00 PM
    - Weather impacts weekend ridership more than weekday
-<!-- 
-## Repository Structure
+
+## Folder Structure
 ```
-ferry-analysis/
+./ferry-tickets/
 ├── notebooks/
 │   ├── 01_data_collection.ipynb
 │   ├── 02_exploratory_analysis.ipynb
 │   └── 03_pattern_analysis.ipynb
-├── src/
-│   ├── data_collection.py
-│   └── analysis_utils.py
 ├── data/
 │   └── processed/
 ├── writeups/
 │   └── blog.md
 │   └── portfolio-entry.md
-├── requirements.txt
 └── README.md
+
+```
+<!-- 
+├── src/
+│   ├── data_collection.py
+│   └── analysis_utils.py
+├── requirements.txt
+
 ```
 
 ## Technical Implementation
