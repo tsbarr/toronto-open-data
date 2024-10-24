@@ -70,10 +70,10 @@ Explore the current state of the analysis via the [interactive dashboard](https:
 - [ ] Automated anomaly detection
 
 ## Blog Post
-For a detailed discussion of the analysis and findings, see the [draft blog post](./blog.md).
+For a detailed discussion of the analysis and findings, see the [draft blog post](./writeups/blog.md).
 
 ## Dependencies
-- Python 3.8+
+- Python 3.10+
 - pandas
 - numpy
 - matplotlib
