@@ -38,8 +38,9 @@ ferry-analysis/
 │   └── analysis_utils.py
 ├── data/
 │   └── processed/
-├── blog/
-│   └── analysis_blog_post.md
+├── writeups/
+│   └── blog.md
+│   └── portfolio-entry.md
 ├── requirements.txt
 └── README.md
 ```

@@ -25,7 +25,7 @@ class TorontoOpenDataAPI:
         Make a request to the CKAN API.
         
         Args:
-            endpoint: API endpoint (e.g., 'package_show')
+            endpoint: API endpoint (i.e., action to take; e.g., 'package_show')
             params: Dictionary of query parameters
             
         Returns:

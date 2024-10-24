@@ -8,7 +8,7 @@ As a data scientist transitioning from evolutionary biology research, I'm fascin
 
 ## Projects
 
-### 🚢 [Ferry Service Analysis](./islands-ferry)
+### 🚢 [Ferry Service Analysis](./ferry-tickets)
 Analyzing patterns in Toronto Island Ferry usage to understand:
 - Seasonal and daily transit patterns
 - Impact of weather and events on ridership
