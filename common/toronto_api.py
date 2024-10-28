@@ -44,9 +44,53 @@ class TorontoOpenDataAPI:
             package_name: Name of the package (dataset)
             
         Returns:
-            Package metadata
+            Package metadata result
         """
-        return self._make_request("package_show", params={"id": package_name})
+        package =  self._make_request("package_show", params={"id": package_name})
+        if package.get('success'):
+            return package.get('result')
+        else: 
+            error = package.get('error')
+            raise Exception(
+                f"{error.get('__type')} Error: {error.get('message')}"
+            )
+        
+    def get_resource_csv(
+            self,
+            package_metadata: Dict
+    ) -> pd.DataFrame:
+        """
+
+        Get data from a csv active resource.
+
+        Args: 
+            package_metadata: Dict containing metadata from a CKAN package.
+        
+        Returns:
+            Dataframe with read csv
+
+        """
+        # Get the CSV resource
+        try:
+
+            csv_resource = next(
+                (r for r in package_metadata['resources'] 
+                    if r['format'] == 'CSV' 
+                    and not r['datastore_active']
+                ),
+                None
+            )
+        except KeyError:
+            print("Metadata incorrectly formatted (should contain a list of resources within a result)")
+        except:
+            print("Exception raised.")
+        else:
+            if csv_resource:
+                df = pd.read_csv(csv_resource['url'])
+                return df
+            else:
+                raise ValueError("No CSV resource found in package")
+        
     
     def get_resource_data(
         self, 
@@ -64,9 +108,10 @@ class TorontoOpenDataAPI:
             DataFrame for CSV resources, dictionary for JSON resources
         """
         if format.lower() == 'csv':
-            return pd.read_csv(
-                f"{self.base_url}/dataset/{resource_id}/download"
-            )
+            return self.get_resource_csv("")
+            # return pd.read_csv(
+            #     f"{self.base_url}/dataset/{resource_id}/download"
+            # )
         else:
             return self._make_request("datastore_search", 
                                     params={"id": resource_id})
