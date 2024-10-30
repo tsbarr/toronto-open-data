@@ -6,7 +6,9 @@ import time
 def download_weather_data(
     station_id: int,
     start_year: int,
-    end_year: int,
+    start_month: int = 1,
+    end_year: int = datetime.now().year,
+    end_month: int = 12,
     output_dir: str = "weather_data"
 ) -> None:
     """
@@ -36,6 +38,14 @@ def download_weather_data(
     
     for year in range(start_year, end_year + 1):
         for month in range(1, 13):
+            # If first_year, 
+            # skip months before start_month
+            if year == start_year and month < start_month:
+                continue
+            # If last_year,
+            # Break after end_month
+            if year == end_year and month > end_month:
+                break
             # Update parameters for this request
             params.update({"Year": year, "Month": month})
             
