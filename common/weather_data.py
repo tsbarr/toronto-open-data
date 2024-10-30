@@ -45,14 +45,15 @@ def download_weather_data(
                 response.raise_for_status()
                 
                 # Get filename from content-disposition header or create one
-                if "content-disposition" in response.headers:
-                    filename = (
-                        response
-                        .headers["content-disposition"]
-                        .split("filename=")[1].strip('"')
-                    )
-                else:
-                    filename = f"weather_data_{station_id}_{year}_{month:02d}.csv"
+                # if "content-disposition" in response.headers:
+                #     filename = (
+                #         response
+                #         .headers["content-disposition"]
+                #         .split("filename=")[1].strip('"')
+                #     )
+                # else:
+                #     filename = f"weather_data_{station_id}_{year}_{month:02d}.csv"
+                filename = f"weather_data_{station_id}_{year}_{month:02d}.csv"
                 
                 # Save the file
                 output_path = Path(output_dir) / filename
