@@ -8,13 +8,13 @@ As a data scientist transitioning from evolutionary biology research, I'm fascin
 
 ## Projects
 
-### 🚢 [Ferry Service Analysis](./ferry-tickets)
+### 🚢 [Ferry Service Analysis](ferry_tickets)
 Analyzing patterns in Toronto Island Ferry usage to understand:
 - Seasonal and daily transit patterns
 - Impact of weather and events on ridership
 - Opportunities for service optimization
 
-### 🐱🐕 [Pet Names Analysis](./licensed-pets)
+### 🐱🐕 [Pet Names Analysis](licensed-pets)
 Exploring a decade of Toronto's pet licensing data (2012-2022) to reveal:
 - Evolution of pet naming trends
 - Comparative analysis between cat and dog names
