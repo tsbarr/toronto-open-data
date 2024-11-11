@@ -11,7 +11,7 @@ This analysis combines multiple public health datasets to understand:
 - Temporal trends in mental health-related incidents
 
 ## Data Sources
-- **Mental Health Services**: 99 service locations
+- **Mental Health Services**: 125 service locations
   - General mental health services
   - Concurrent disorder programs
 - **Crisis Events**: 112,314 Mental Health Act apprehensions (2014-2024)
