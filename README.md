@@ -8,6 +8,13 @@ As a data scientist transitioning from evolutionary biology research, I'm fascin
 
 ## Projects
 
+### 🏥 [Mental Health Services Analysis](mental-health-services)
+Analyzing Toronto's mental health infrastructure (2014-2024) to understand:
+- Geographic distribution of mental health services
+- Patterns in crisis response and apprehensions
+- Relationship between service availability and crisis events
+- Spatial equity in mental health resource distribution
+
 ### 🚢 [Ferry Service Analysis](ferry_tickets)
 Analyzing patterns in Toronto Island Ferry usage to understand:
 - Seasonal and daily transit patterns
@@ -30,13 +37,15 @@ Exploring a decade of Toronto's pet licensing data (2012-2022) to reveal:
 ## Repository Structure
 ```
 toronto-open-data/
-├── islands-ferry/     # Toronto Island Ferry analysis
-└── licensed-pets/     # Pet Names analysis
+├── mental-health-services/   # Mental Health Services analysis
+├── ferry_tickets/            # Toronto Island Ferry analysis
+├── licensed-pets/            # Pet Names analysis
+└── common/                   # Shared utilities and helpers
+    ├── utils.py              # Common functions
+    ├── toronto_api.py        # API interaction tools
+    └── weather.py            # Weather data tools
 ```
-<!-- ├── common/            # Shared utilities and helpers
-│   ├── utils/        # Common functions
-│   └── toronto_api.py # API interaction tools
-└── docs/             # Additional documentation
+<!-- └── docs/              # Additional documentation
 ``` -->
 
 <!-- ## Getting Started
