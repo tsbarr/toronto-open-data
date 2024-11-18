@@ -71,7 +71,7 @@ def extract_hierarchical_metrics_names(df):
     return metric_hierarchy
 
 
-def extract_metrics(df):
+def extract_population_metrics(df):
     """
     Extract metrics from census-formatted dataframe.
     
@@ -91,7 +91,8 @@ def extract_metrics(df):
     # Key metrics we want to extract with their parent categories
     target_metrics = {
         'total_population': 'Total - Age groups of the population - 25% sample data',
-        'adults_15_64': '15 to 64 years',
+        # 'tsns_designation': 'TSNS 2020 Designation' # note: not numeric! if using, need to handle it in next loop
+        # 'adults_15_64': '15 to 64 years',
         'youth_15_19': '15 to 19 years',
         'youth_20_24': '20 to 24 years',
         'seniors_65_plus': '65 years and over',
@@ -117,7 +118,7 @@ def extract_metrics(df):
     if 'total_population' in results.columns:
         # Get total youths from both age groups
         results['youth_15_24'] = results['youth_15_19'] + results['youth_20_24']
-        results['adults_20_64'] = results['adults_15_64'] - results['youth_15_19']
+        # results['adults_20_64'] = results['adults_15_64'] - results['youth_15_19']
         # Calculate percentages
         for col in ['youth_15_24', 'seniors_65_plus', 'low_income']:
             if col in results.columns:
@@ -215,56 +216,6 @@ def extract_metrics(df):
 # df = pd.read_csv('nbhd_2021_census_profile_full_158model.csv')
 # metrics, priorities, summary, hierarchy = analyze_neighborhoods(df)
 
-def extract_population_metrics(df):
-    """
-    Extract key population metrics from census-format data 
-    where metrics are rows and neighbourhoods are columns.
-    
-    Parameters:
-    df (pd.DataFrame): Raw neighbourhood profile data where 
-    columns are neighbourhoods and rows are metrics
-    
-    Returns:
-    pd.DataFrame: Processed population metrics by neighbourhood
-    """
-    # First, get neighbourhood names (skip first column which is metric names)
-    neighbourhoods = df.columns[1:]
-    
-    # Create a dictionary to store metric row indices
-    metric_indices = {
-        'total_pop': 'Total - Age groups of the population - 25% sample data',
-        'youth_pop': '15 to 24 years',
-        'adult_pop': '15 to 64 years',
-        'senior_pop': '65 years and over',
-        'median_income': 'Median total income in 2020 ($)',
-        'low_income': ('In low income based on the Low-income measure, after tax (LIM-AT)')
-    }
-    
-    # Initialize results DataFrame with neighbourhoods as index
-    results = pd.DataFrame(index=neighbourhoods)
-    
-    # Extract each metric
-    for metric_name, row_label in metric_indices.items():
-        # Find the row with this metric
-        metric_row = df.loc[df.iloc[:, 0] == row_label]
-        if not metric_row.empty:
-            # Add the metric values to results, converting to numeric
-            results[metric_name] = pd.to_numeric(
-                metric_row.iloc[0, 1:], 
-                errors='coerce'
-            )
-    
-    # Calculate derived metrics
-    if 'total_pop' in results.columns and 'low_income' in results.columns:
-        results['low_income_pct'] = (
-            results['low_income'] / results['total_pop'] * 100
-        )
-    
-    # Reset index to make neighbuorhood a column
-    results = results.reset_index()
-    results = results.rename(columns={'index': 'neighborhood'})
-    
-    return results
 
 def calculate_service_need_index(population_df):
     """
