@@ -33,7 +33,7 @@ def identify_hierarchy_level(metric_name):
     return leading_spaces // 2, metric_name.strip()
 
 
-def identify_hierarchical_metrics(df):
+def extract_hierarchical_metrics_names(df):
     """
     Extract metric names and their hierarchical relationships.
     
@@ -46,38 +46,34 @@ def identify_hierarchical_metrics(df):
     
     # Create a dictionary to track metric hierarchies
     metric_hierarchy = {}
-    current_parent = None
-    current_level = 0
+    current_0 = None
+    current_1 = None
     
     # Process each row to understand the hierarchy
     for idx, row in df.iterrows():
+        # get metric name from first column of row
         metric_name = row.iloc[0]
+        # get tuple with level and name without spaces
         level, clean_name = identify_hierarchy_level(metric_name)
-        # process up to 3 levels in the hierarchy
-        if level < 4:
-        if current_level < level:
-            current_level = level
-            print(level)
-            print(clean_name)
-        elif current_level == level:
-            print(clean_name)
-        
-    return current_level
-        
-        # if level == 0:
-        #     current_parent = clean_name
-        #     metric_hierarchy[clean_name] = []
-        #     current_level = level
-        # elif level > current_level:
-        #     metric_hierarchy[current_parent].append(clean_name)
-        # current_level = level
+        # process it depending on level, up to level 2
+        if level == 0:
+            # new level 0 dict
+            current_0 = clean_name
+            metric_hierarchy[clean_name] = {}
+        elif level == 1:
+            # new level 1 dict
+            current_1 = clean_name
+            metric_hierarchy[current_0][clean_name] = []
+        elif level == 2:
+            # append to list
+            metric_hierarchy[current_0][current_1].append(clean_name)
     
-    # return metric_hierarchy
+    return metric_hierarchy
 
 
-def extract_hierarchical_metrics(df):
+def extract_metrics(df):
     """
-    Extract metrics while respecting their hierarchical relationships.
+    Extract metrics from census-formatted dataframe.
     
     Parameters:
     df (pd.DataFrame): Census data with first column as metric names
@@ -86,41 +82,22 @@ def extract_hierarchical_metrics(df):
     pd.DataFrame: Processed population metrics by neighborhood
     tuple: Dictionary of metric hierarchies
     """
-    # Get neighborhood names (skip first column which is metric names)
-    neighborhoods = df.columns[1:]
-    
-    # Create a dictionary to track metric hierarchies
-    metric_hierarchy = {}
-    current_parent = None
-    current_level = 0
-    
-    # Process each row to understand the hierarchy
-    for idx, row in df.iterrows():
-        metric_name = row.iloc[0]
-        level, clean_name = identify_hierarchy_level(metric_name)
-        
-        if level == 0:
-            current_parent = clean_name
-            metric_hierarchy[clean_name] = []
-            current_level = level
-        elif level > current_level:
-            metric_hierarchy[current_parent].append(clean_name)
-        current_level = level
+    # Get neighbourhood names (skip first column which is metric names)
+    neighbourhoods = df.columns[1:]
     
     # Initialize results DataFrame
-    results = pd.DataFrame(index=neighborhoods)
+    results = pd.DataFrame(index=neighbourhoods)
     
     # Key metrics we want to extract with their parent categories
     target_metrics = {
         'total_population': 'Total - Age groups of the population - 25% sample data',
+        'adults_15_64': '15 to 64 years',
         'youth_15_19': '15 to 19 years',
         'youth_20_24': '20 to 24 years',
-        'adults_25_64': '25 to 64 years',
         'seniors_65_plus': '65 years and over',
-        'low_income': 'In low income based on the Low-income measure, after tax (LIM-AT)',
-        'median_income': 'Median total income in 2020 ($)',
-        'no_certificate': 'No certificate, diploma or degree',
-        'mental_health_risk': 'Unemployed',  # Additional risk factor
+        'low_income': 'In low income based on the Low-income cut-offs, after tax (LICO-AT)',
+        'median_income_2019': 'Median after-tax income in 2019 among recipients ($)',
+        'median_income_2020': 'Median after-tax income in 2020 among recipients ($)'
     }
     
     # Extract each metric, considering hierarchy
@@ -140,9 +117,9 @@ def extract_hierarchical_metrics(df):
     if 'total_population' in results.columns:
         # Get total youths from both age groups
         results['youth_15_24'] = results['youth_15_19'] + results['youth_20_24']
+        results['adults_20_64'] = results['adults_15_64'] - results['youth_15_19']
         # Calculate percentages
-        for col in ['youth_15_24', 'adults_25_64', 'seniors_65_plus', 
-                   'low_income', 'no_certificate']:
+        for col in ['youth_15_24', 'seniors_65_plus', 'low_income']:
             if col in results.columns:
                 results[f'{col}_pct'] = (
                     results[col] / results['total_population'] * 100
@@ -152,7 +129,7 @@ def extract_hierarchical_metrics(df):
     results = results.reset_index()
     results = results.rename(columns={'index': 'neighborhood'})
     
-    return results, metric_hierarchy
+    return results
 
 # def calculate_service_need_index(population_df):
 #     """
