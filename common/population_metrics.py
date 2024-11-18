@@ -90,6 +90,7 @@ def extract_population_metrics(df):
     
     # Key metrics we want to extract with their parent categories
     target_metrics = {
+        'neighbourhood_number': 'Neighbourhood Number',
         'total_population': 'Total - Age groups of the population - 25% sample data',
         # 'tsns_designation': 'TSNS 2020 Designation' # note: not numeric! if using, need to handle it in next loop
         # 'adults_15_64': '15 to 64 years',
@@ -128,50 +129,50 @@ def extract_population_metrics(df):
     
     # Reset index to make neighborhood a column
     results = results.reset_index()
-    results = results.rename(columns={'index': 'neighborhood'})
+    results = results.rename(columns={'index': 'neighbourhood_name'})
     
     return results
 
-# def calculate_service_need_index(population_df):
-#     """
-#     Calculate service need index considering hierarchical metrics.
+def calculate_service_need_index(metrics_df):
+    """
+    Calculate service need index based on neighbourhood population metrics.
     
-#     Parameters:
-#     population_df (pd.DataFrame): Processed population metrics
+    Parameters:
+    metrics_df (pd.DataFrame): Processed population metrics
     
-#     Returns:
-#     pd.DataFrame: DataFrame with service need index
-#     """
-#     # Define weights for different factors
-#     weights = {
-#         'total_population': 0.15,
-#         'youth_15_24_pct': 0.25,
-#         'low_income_pct': 0.30,
-#         'no_certificate_pct': 0.15,
-#         'mental_health_risk': 0.15
-#     }
+    Returns:
+    pd.Series: Series of float64 values representing the service need index of each neighbourhood
+    """
+    # Define weights for different factors
+    weights = {
+        'total_population': 0.25,
+        'youth_15_24_pct': 0.30,
+        'low_income_pct': 0.45
+    }
+    # working copy of input df
+    population_df = metrics_df.copy()
     
-#     # Normalize metrics
-#     for col in weights.keys():
-#         if col in population_df.columns:
-#             if not col.endswith('_pct'):
-#                 population_df[f'{col}_norm'] = (
-#                     population_df[col] / population_df[col].max()
-#                 )
-#             else:
-#                 # Percentage columns are already normalized
-#                 population_df[f'{col}_norm'] = population_df[col] / 100
+    # Normalize metrics
+    for col in weights.keys():
+        if col in population_df.columns:
+            if not col.endswith('_pct'):
+                population_df[f'{col}_norm'] = (
+                    population_df[col] / population_df[col].max()
+                )
+            else:
+                # Percentage columns are already normalized
+                population_df[f'{col}_norm'] = population_df[col] / 100
     
-#     # Calculate weighted service need index
-#     index_components = []
-#     for metric, weight in weights.items():
-#         norm_col = f'{metric}_norm'
-#         if norm_col in population_df.columns:
-#             index_components.append(weight * population_df[norm_col])
+    # Calculate weighted service need index
+    index_components = []
+    for metric, weight in weights.items():
+        norm_col = f'{metric}_norm'
+        if norm_col in population_df.columns:
+            index_components.append(weight * population_df[norm_col])
     
-#     population_df['service_need_index'] = sum(index_components)
+    service_need_index = sum(index_components)
     
-#     return population_df
+    return service_need_index
 
 # def analyze_neighborhoods(df, n_priorities=10):
 #     """
@@ -217,69 +218,38 @@ def extract_population_metrics(df):
 # metrics, priorities, summary, hierarchy = analyze_neighborhoods(df)
 
 
-def calculate_service_need_index(population_df):
-    """
-    Calculate a service need index based on population characteristics.
+# def generate_neighborhood_report(df, n_priorities=10):
+#     """
+#     Generate a comprehensive neighborhood analysis report.
     
-    Parameters:
-    population_df (pd.DataFrame): Processed population metrics
+#     Parameters:
+#     df (pd.DataFrame): Raw census data
+#     n_priorities (int): Number of priority neighborhoods to identify
     
-    Returns:
-    pd.DataFrame: DataFrame with service need index
-    """
-    # Define weights for different factors
-    weights = {
-        'total_pop': 0.25,
-        'youth_pop': 0.30,
-        'low_income_pct': 0.45
-    }
+#     Returns:
+#     tuple: (population_metrics, priority_neighborhoods, summary_stats)
+#     """
+#     # Extract base metrics
+#     pop_metrics = extract_population_metrics(df)
     
-    # Create normalized versions of metrics
-    for col in ['total_pop', 'youth_pop']:
-        population_df[f'{col}_norm'] = (
-            population_df[col] / population_df[col].max()
-        )
+#     # Calculate need index
+#     pop_with_need = calculate_service_need_index(pop_metrics)
     
-    # Calculate weighted service need index
-    population_df['service_need_index'] = (
-        weights['total_pop'] * population_df['total_pop_norm'] +
-        weights['youth_pop'] * population_df['youth_pop_norm'] +
-        weights['low_income_pct'] * (population_df['low_income_pct'] / 100)
-    )
+#     # Get priority neighborhoods
+#     priorities = (pop_with_need
+#         .sort_values('service_need_index', ascending=False)
+#         .head(n_priorities)
+#     )
     
-    return population_df
-
-def generate_neighborhood_report(df, n_priorities=10):
-    """
-    Generate a comprehensive neighborhood analysis report.
+#     # Calculate summary statistics
+#     summary_stats = {
+#         'total_population': pop_metrics['total_pop'].sum(),
+#         'avg_neighborhood_pop': pop_metrics['total_pop'].mean(),
+#         'avg_low_income_pct': pop_metrics['low_income_pct'].mean(),
+#         'median_youth_pop': pop_metrics['youth_pop'].median()
+#     }
     
-    Parameters:
-    df (pd.DataFrame): Raw census data
-    n_priorities (int): Number of priority neighborhoods to identify
-    
-    Returns:
-    tuple: (population_metrics, priority_neighborhoods, summary_stats)
-    """
-    # Extract base metrics
-    pop_metrics = extract_population_metrics(df)
-    
-    # Calculate need index
-    pop_with_need = calculate_service_need_index(pop_metrics)
-    
-    # Get priority neighborhoods
-    priorities = (pop_with_need
-                 .sort_values('service_need_index', ascending=False)
-                 .head(n_priorities))
-    
-    # Calculate summary statistics
-    summary_stats = {
-        'total_population': pop_metrics['total_pop'].sum(),
-        'avg_neighborhood_pop': pop_metrics['total_pop'].mean(),
-        'avg_low_income_pct': pop_metrics['low_income_pct'].mean(),
-        'median_youth_pop': pop_metrics['youth_pop'].median()
-    }
-    
-    return pop_metrics, priorities, summary_stats
+#     return pop_metrics, priorities, summary_stats
 
 # Example usage:
 # df = pd.read_csv('nbhd_2021_census_profile_full_158model.csv')
