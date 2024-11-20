@@ -145,9 +145,9 @@ def calculate_service_need_index(metrics_df):
     """
     # Define weights for different factors
     weights = {
-        'total_population': 0.25,
-        'youth_15_24_pct': 0.30,
-        'low_income_pct': 0.45
+        'total_population': (1/3),
+        'youth_15_24_pct': (1/3),
+        'low_income_pct': (1/3)
     }
     # working copy of input df
     population_df = metrics_df.copy()
