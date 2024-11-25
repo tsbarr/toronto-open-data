@@ -6,7 +6,68 @@ Toronto's Open Data CKAN API resource calls.
 """
 import pandas as pd
 from typing import Dict
+from datetime import datetime
 
+class DataProcessor:
+    """Common data processing utilities for Toronto Open Data."""
+    
+    @staticmethod
+    def parse_datetime(
+        df: pd.DataFrame,
+        datetime_col: str,
+        add_components: bool = True
+    ) -> pd.DataFrame:
+        """
+        Parse datetime column and optionally add time components.
+        
+        Args:
+            df: Input DataFrame
+            datetime_col: Name of datetime column
+            add_components: Whether to add year, month, day, hour columns
+            
+        Returns:
+            DataFrame with processed datetime information
+        """
+        df = df.copy()
+        df[datetime_col] = pd.to_datetime(df[datetime_col])
+        
+        if add_components:
+            df[f'{datetime_col}_year'] = df[datetime_col].dt.year
+            df[f'{datetime_col}_month'] = df[datetime_col].dt.month
+            df[f'{datetime_col}_day'] = df[datetime_col].dt.day
+            df[f'{datetime_col}_hour'] = df[datetime_col].dt.hour
+            df[f'{datetime_col}_dayofweek'] = df[datetime_col].dt.dayofweek
+            
+        return df
+    
+    @staticmethod
+    def add_temporal_flags(
+        df: pd.DataFrame,
+        datetime_col: str
+    ) -> pd.DataFrame:
+        """
+        Add useful temporal flags to the DataFrame.
+        
+        Args:
+            df: Input DataFrame
+            datetime_col: Name of datetime column
+            
+        Returns:
+            DataFrame with additional temporal flags
+        """
+        df = df.copy()
+        
+        # Get today's date and latest date in data
+        today = datetime.today().date()
+        latest = df[datetime_col].dt.date.max()
+        
+        # Add flags
+        df['is_weekend'] = df[datetime_col].dt.dayofweek >= 5
+        df['is_today'] = df[datetime_col].dt.date == today
+        df['is_latest'] = df[datetime_col].dt.date == latest
+        
+        return df
+    
 class PetNamesProcessor:
     """Processor for pet names data."""
     
