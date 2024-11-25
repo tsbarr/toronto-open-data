@@ -5,7 +5,7 @@ Utilities for interacting with Toronto's Open Data CKAN API.
 """
 import requests
 import pandas as pd
-from typing import Dict, List, Optional, Union
+from typing import Dict, List, Optional, Union, Callable
 from datetime import datetime
 
 
@@ -58,13 +58,20 @@ class TorontoOpenDataAPI:
     def show_resources_info(
             self,
             package_metadata: Dict
-    ):
+    ) -> None:
         """
 
         Print info of resources in package.
 
         Args: 
             package_metadata: Dict containing metadata from a CKAN package.
+        
+        
+        Return: 
+            None. Function only prints the info and returns nothing.
+            Info printed: Number of resources in the package, 
+            their name, format, url_type and 
+            if they are datastore_active
         
         """
         # Check resources in package using metadata
@@ -179,6 +186,37 @@ class TorontoOpenDataAPI:
             # return self._make_request("datastore_search", 
             #                         params={"id": resource_id})
 
+    # def get_resource_data(
+    #     self,
+    #     resource: Dict,
+    #     preprocessor: Optional[Callable] = None,
+    #     **kwargs
+    # ) -> pd.DataFrame:
+    #     """
+    #     Get data from a resource, handling different file formats.
+        
+    #     Args:
+    #         resource: Resource dictionary from package metadata
+    #         preprocessor: Optional function to preprocess the data
+    #         **kwargs: Additional arguments for read functions
+            
+    #     Returns:
+    #         Processed DataFrame
+    #     """
+    #     file_format = resource.get('format', '').lower()
+        
+    #     if file_format == 'csv':
+    #         df = pd.read_csv(resource['url'], **kwargs)
+    #     elif file_format in ['xls', 'xlsx']:
+    #         df = pd.read_excel(resource['url'], **kwargs)
+    #     else:
+    #         raise ValueError(f"Unsupported file format: {file_format}")
+            
+    #     if preprocessor:
+    #         df = preprocessor(df, resource)
+            
+    #     return df
+
 
 class DataProcessor:
     """Common data processing utilities for Toronto Open Data."""
@@ -250,7 +288,7 @@ def get_example_usage():
     ferry_package = client.get_package("toronto-island-ferry-ticket-counts")
     
     # Get the CSV resource
-    for resource in ferry_package['result']['resources']:
+    for resource in ferry_package['resources']:
         if resource['format'] == 'CSV':
             df = pd.read_csv(resource['url'])
             break
@@ -267,4 +305,5 @@ if __name__ == "__main__":
     df = get_example_usage()
     print("Data shape:", df.shape)
     print("\nColumns:", df.columns.tolist())
+    print('\n', df.head())
     
