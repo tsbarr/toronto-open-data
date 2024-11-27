@@ -218,10 +218,6 @@ class TorontoOpenDataAPI:
             
     #     return df
 
-
-
-
-
 def get_example_usage():
     """Example usage of the utility classes."""
     # Initialize API client
