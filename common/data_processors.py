@@ -15,7 +15,8 @@ class DataProcessor:
     def parse_datetime(
         df: pd.DataFrame,
         datetime_col: str,
-        add_components: bool = True
+        add_components: bool = True,
+        **kwargs
     ) -> pd.DataFrame:
         """
         Parse datetime column and optionally add time components.
@@ -24,12 +25,13 @@ class DataProcessor:
             df: Input DataFrame
             datetime_col: Name of datetime column
             add_components: Whether to add year, month, day, hour columns
+            **kwargs: Additional arguments for to_datetime function
             
         Returns:
             DataFrame with processed datetime information
         """
         df = df.copy()
-        df[datetime_col] = pd.to_datetime(df[datetime_col])
+        df[datetime_col] = pd.to_datetime(df[datetime_col], **kwargs)
         
         if add_components:
             df[f'{datetime_col}_year'] = df[datetime_col].dt.year
@@ -71,30 +73,35 @@ class DataProcessor:
 
 class FerryDataProcessor:
     """Processor for ferry data."""
-    
+    @staticmethod
     def process_resource(
-        self,
         df: pd.DataFrame,
     ) -> pd.DataFrame:
         """Process ferry ticket data."""
         df = df.copy()
-        
-        # Parse Timestamp as datetime obj
-        df['datetimeTimestamp'] = pd.to_datetime(
-            df['Timestamp'],
-            format="%Y-%m-%dT%H:%M:%S"
+        df = DataProcessor.parse_datetime(
+            df,
+            datetime_col='Timestamp',
+            add_components=False,
+            format='%Y-%m-%dT%H:%M:%S'
         )
+        df = DataProcessor.add_temporal_flags(df, 'Timestamp')
+        # # Parse Timestamp as datetime obj
+        # df['datetimeTimestamp'] = pd.to_datetime(
+        #     df['Timestamp'],
+        #     format="%Y-%m-%dT%H:%M:%S"
+        # )
 
-        # Get latest date
-        latest = max(df['datetimeTimestamp']).date()
-        print(f"latest:\t{latest}")
-        # Get today's date
-        today = datetime.today().date()
-        print(f"today:\t{today}")
+        # # Get latest date
+        # latest = max(df['datetimeTimestamp']).date()
+        # print(f"latest:\t{latest}")
+        # # Get today's date
+        # today = datetime.today().date()
+        # print(f"today:\t{today}")
 
-        # Checking if the date part of timestamp is the same as today and latest date, add as df columns
-        df['isToday'] = today == df['datetimeTimestamp'].dt.date
-        df['isLatest'] = latest == df['datetimeTimestamp'].dt.date
+        # # Checking if the date part of timestamp is the same as today and latest date, add as df columns
+        # df['isToday'] = today == df['datetimeTimestamp'].dt.date
+        # df['isLatest'] = latest == df['datetimeTimestamp'].dt.date
         
         return df
     
