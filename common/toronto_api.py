@@ -9,12 +9,19 @@ import pandas as pd
 from typing import Dict, Optional
 
 class TorontoOpenDataAPI:
-    """Client for interacting with Toronto's Open Data CKAN API."""
+    """
+    Client for interacting with Toronto's Open Data CKAN API.
     
-    def __init__(self, package_name):
+    Args:
+        package_name: str of package name to get from Toronto's Open Data CKAN API
+        show_info: wheather to print some of the metadata to check the contents of the resources included in the package
+    
+    """
+    
+    def __init__(self, package_name, show_info = False):
         self.base_url = 'https://ckan0.cf.opendata.inter.prod-toronto.ca'
         self.api_version = '3'
-        self.package_metadata = self.get_package(package_name)
+        self.package_metadata = self.get_package(package_name, show_info)
     
     def _make_request(
         self, 
@@ -36,7 +43,7 @@ class TorontoOpenDataAPI:
         response.raise_for_status()  # Raise exception for bad status codes
         return response.json()
     
-    def get_package(self, package_name: str) -> Dict:
+    def get_package(self, package_name: str, show_info) -> Dict:
         """
         Get metadata for a specific package.
         
@@ -48,7 +55,10 @@ class TorontoOpenDataAPI:
         """
         package =  self._make_request("package_show", params={"id": package_name})
         if package.get('success'):
-            return package.get('result')
+            result = package.get('result')
+            if show_info:
+                self.show_resources_info(result)
+            return result
         else: 
             error = package.get('error')
             raise Exception(
@@ -56,11 +66,13 @@ class TorontoOpenDataAPI:
             )
         
     def show_resources_info(
-            self
+        self, result: Dict
     ):
         """
 
         Print info of resources in package.
+        Args:
+            result: Dict of package metadata from which to print info
         
         Return: 
             None. Function only prints the info and returns nothing.
@@ -70,8 +82,8 @@ class TorontoOpenDataAPI:
         
         """
         # Check resources in package using metadata
-        print(f"Number of resources: {self.package_metadata['num_resources']}\n")
-        for resource in self.package_metadata['resources']:
+        print(f"Number of resources: {result['num_resources']}\n")
+        for resource in result['resources']:
             print(f"""{resource['position']}: {resource['name']}
     datastore_active: {resource['datastore_active']}
     format: {resource['format']}
