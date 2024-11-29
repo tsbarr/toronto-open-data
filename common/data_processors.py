@@ -67,6 +67,36 @@ class DataProcessor:
         df['is_latest'] = df[datetime_col].dt.date == latest
         
         return df
+
+
+class FerryDataProcessor:
+    """Processor for ferry data."""
+    
+    def process_resource(
+        self,
+        df: pd.DataFrame,
+    ) -> pd.DataFrame:
+        """Process ferry ticket data."""
+        df = df.copy()
+        
+        # Parse Timestamp as datetime obj
+        df['datetimeTimestamp'] = pd.to_datetime(
+            df['Timestamp'],
+            format="%Y-%m-%dT%H:%M:%S"
+        )
+
+        # Get latest date
+        latest = max(df['datetimeTimestamp']).date()
+        print(f"latest:\t{latest}")
+        # Get today's date
+        today = datetime.today().date()
+        print(f"today:\t{today}")
+
+        # Checking if the date part of timestamp is the same as today and latest date, add as df columns
+        df['isToday'] = today == df['datetimeTimestamp'].dt.date
+        df['isLatest'] = latest == df['datetimeTimestamp'].dt.date
+        
+        return df
     
 class PetNamesProcessor:
     """Processor for pet names data."""
@@ -134,31 +164,3 @@ class PetNamesProcessor:
         )
         
         return df
-
-
-class FerryDataProcessor:
-    """Processor for ferry data."""
-    
-    def process_resource(
-        self,
-        df: pd.DataFrame,
-        resource: Dict
-    ) -> pd.DataFrame:
-        """Process ferry ticket data."""
-        df = df.copy()
-        
-        # Parse datetime
-        df['datetimeTimestamp'] = pd.to_datetime(
-            df['Timestamp'],
-            format="%Y-%m-%dT%H:%M:%S"
-        )
-        
-        # Add temporal components
-        df['year'] = df['datetimeTimestamp'].dt.year
-        df['month'] = df['datetimeTimestamp'].dt.month
-        df['day'] = df['datetimeTimestamp'].dt.day
-        df['hour'] = df['datetimeTimestamp'].dt.hour
-        df['dayofweek'] = df['datetimeTimestamp'].dt.dayofweek
-        
-        return df
-    

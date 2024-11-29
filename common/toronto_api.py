@@ -87,13 +87,13 @@ class TorontoOpenDataAPI:
         Get data from a resource, handling different file formats.
         
         Args:
-            resource_idx: idx of desired resource within the package metadata
+            resource_idx: idx of desired resource within the package metadata, defaults to first position (0)
             **kwargs: Additional arguments for read functions
             
         Returns:
             Processed DataFrame
         """
-                # Get the active datastore resource
+        # Get the desired resource metadata
         try:
             resource = next(
                 (r for r in self.package_metadata['resources'] 
@@ -109,9 +109,13 @@ class TorontoOpenDataAPI:
         
         if file_format == 'csv':
             df = pd.read_csv(resource['url'], **kwargs)
-        elif file_format in ['xls', 'xlsx']:
+        elif file_format in ['xls', 'xlsx', 'excel']:
             df = pd.read_excel(resource['url'], **kwargs)
+        elif file_format in ['xml']:
+            df = pd.read_xml(resource['url'], **kwargs)
+        elif file_format in ['json']:
+            df = pd.read_json(resource['url'], **kwargs)
         else:
-            raise ValueError(f"Unsupported file format: {file_format}")
+            raise ValueError(f'Unsupported file format: {file_format}')
             
         return df
