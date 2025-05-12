@@ -119,7 +119,7 @@ class TorontoOpenDataAPI:
             print("Exception raised.")
         file_format = resource.get('format', '').lower()
         
-        if file_format == 'csv':
+        if (file_format == 'csv') | resource['datastore_active']:
             df = pd.read_csv(resource['url'], **kwargs)
         elif file_format in ['xls', 'xlsx', 'excel']:
             df = pd.read_excel(resource['url'], **kwargs)
